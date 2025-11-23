@@ -71,6 +71,320 @@ To move beyond basic connectivity measures (such as Degree Centrality), this stu
 
 \subsection{Network Influence and Connectivity Patterns}
 
+\subsubsection{Degree Centrality}
+
+Degree centrality measures how many direct connections each stop has in the network.
+In public transportation systems, stops with high degree centrality act as important
+hubs where multiple routes intersect, while low-degree stops are usually peripheral
+and less integrated into the system.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{deg_bcn_map.png}
+        \caption{Barcelona}
+        \label{fig:deg-bcn-map}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{deg_mil_map.png}
+        \caption{Milan}
+        \label{fig:deg-mil-map}
+    \end{subfigure}
+    \caption{Degree centrality map of the two cities.}
+    \label{fig:deg-map}
+\end{figure}
+
+Figure~\ref{fig:deg-map} shows the spatial distribution of degree centrality for
+Barcelona and Milan. In Barcelona, the highest degree values are concentrated in
+the central and southern parts of the city, with prominent hubs such as
+\textit{Paral·lel -- Pl Espanya}, \textit{Pl Espanya -- FGC} and
+\textit{Av dels Quinze -- Serrano}. These stops reach total degrees between 8
+and 12 and correspond to major bus--metro interchanges and dense crossing points
+of the urban road network. Peripheral and coastal areas, by contrast, exhibit
+much lower degree values and a sparser stop configuration.
+
+Milan exhibits a more radial structure. The most connected stops cluster around
+the inner transport ring and key interchange stations, including
+\textit{Comasina M3}, \textit{Diaz}, \textit{Stazione Lambrate M2} and
+\textit{Stazione Centrale}. The stop \textit{Comasina M3} attains the highest
+degree in the dataset (total degree $=16$), highlighting its role as a major
+transfer hub at the terminus of a metro line. Outside this inner belt, the
+network extends into long branches of low-degree stops, consistent with a
+hub-and-spoke layout typical of metropolitan bus systems.
+
+The summary statistics of the directed degrees confirm that the average degree is similar in both networks, but Barcelona distributes connectivity more evenly across its central corridor, while Milan concentrates it into a smaller number of major interchange nodes.
+ Barcelona has an average total
+degree of $2.59$ (maximum $12$) over $2771$ stops, while Milan has an average of
+$2.49$ (maximum $16$) over $4913$ stops. In both cities the interquartile range
+for total degree lies between 2 and 3, meaning that most stops connect to only a
+small number of neighbours and that high-degree hubs are relatively rare.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{deg_bcn_dist.png}
+        \caption{Barcelona}
+        \label{fig:deg-bcn-dist}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{deg_mil_dist.png}
+        \caption{Milan}
+        \label{fig:deg-mil-dist}
+    \end{subfigure}
+    \caption{Degree centrality distribution of the two cities.}
+    \label{fig:deg-dist}
+\end{figure}
+
+The degree centrality distributions in Figure~\ref{fig:deg-dist} show a strong
+peak at low values and a long right tail for both cities. This indicates that the
+networks are composed of many lightly connected stops together with a small set
+of highly connected hubs. Barcelona’s distribution reaches slightly higher
+centrality values, reflecting several medium-size hubs spread across the central
+corridor. Milan’s distribution is more concentrated, with a few very dominant
+stops such as \textit{Comasina M3} and \textit{Stazione Centrale}.
+
+% -------------------------------------------------------
+% INSERTED ACADEMIC CONTEXT PARAGRAPH (FROM ARTICLE)
+% -------------------------------------------------------
+These patterns are consistent with empirical findings reported in studies of large
+public transport networks. Von Ferber et al.\ \cite{vonferber} show that PTNs typically exhibit
+heterogeneous degree distributions characterised by many low-degree nodes and a
+small number of highly connected hubs. Depending on the network representation,
+these distributions often follow exponential or power-law decay, reflecting the
+structural contrast between dense urban cores and sparsely connected peripheral
+areas. The behaviour observed in Barcelona and Milan aligns closely with these
+general characteristics.
+
+% -------------------------------------------------------
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{deg_bcn_top5.png}
+        \caption{Barcelona}
+        \label{fig:deg-bcn-top5}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{deg_mil_top5.png}
+        \caption{Milan}
+        \label{fig:deg-mil-top5}
+    \end{subfigure}
+    \caption{Top five stops by degree centrality in each city.}
+    \label{fig:deg-top5}
+\end{figure}
+
+Figure~\ref{fig:deg-top5} highlights the five most connected stops in each city
+and summarises these patterns. Barcelona’s hubs are distributed along the main
+east--west corridor and around major squares, indicating several alternative
+points of access to the network. Milan’s top-degree stops are more tightly
+aligned with metro interchanges on the inner ring, suggesting a stronger
+dependence on a small set of central transfer stations.
+
+Overall, both cities display skewed degree distributions typical of real-world
+transport networks, with many peripheral stops supported by a few hubs. Barcelona
+shows a more distributed connectivity structure, whereas Milan relies more heavily
+on a limited number of highly connected central nodes.
+
+\subsubsection{Betweenness Centrality}
+
+Betweenness centrality measures how often a stop lies on the shortest paths between
+other stops in the network. In public transportation systems, stops with high
+betweenness serve as critical transfer points that facilitate efficient movement 
+across the network. Such stops typically handle a disproportionate amount of 
+passenger flow, making them essential for connectivity but also potential points 
+of vulnerability.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{betweenness_bcn_map.png}
+        \caption{Barcelona}
+        \label{fig:btw-bcn-map}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{betweenness_mil_map.png}
+        \caption{Milan}
+        \label{fig:btw-mil-map}
+    \end{subfigure}
+    \caption{Betweenness centrality map of the two cities.}
+    \label{fig:btw-map}
+\end{figure}
+
+Figure~\ref{fig:btw-map} shows that the highest betweenness values in Barcelona 
+are concentrated along the major east--west corridors, particularly around 
+\textit{Badajoz -- Diagonal}, \textit{Pl Universitat}, and \textit{Diagonal -- 
+Ciutat de Granada}. These stops form part of a continuous structural spine running 
+through the Eixample district, indicating that many shortest paths rely on this 
+central axis. Milan displays an even more pronounced centralization pattern: the 
+largest betweenness values appear around \textit{Cadorna M1/M2}, 
+\textit{Stazione Centrale}, and \textit{Diaz}, forming a dense core of major 
+transfer hubs within the inner transport ring.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{betweenness_bcn_dist.png}
+        \caption{Barcelona}
+        \label{fig:btw-bcn-dist}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{betweenness_mil_dist.png}
+        \caption{Milan}
+        \label{fig:btw-mil-dist}
+    \end{subfigure}
+    \caption{Betweenness centrality distribution of the two cities.}
+    \label{fig:btw-dist}
+\end{figure}
+
+The distributions in Figure~\ref{fig:btw-dist} show a characteristic long-tailed
+shape in both cities: the vast majority of stops have very low betweenness, while 
+a small subset exhibits substantially higher values. Barcelona’s maximum 
+betweenness is $0.1987$, whereas Milan reaches $0.2716$, suggesting that Milan’s 
+network is more centralized and relies more heavily on a few major transfer hubs.
+Barcelona has a slightly higher median ($0.0061$ vs.\ $0.0033$), indicating a more 
+even spread of intermediate transfer roles across multiple stops.
+
+These patterns align with established findings in public transport network research.
+Von Ferber et al.\ \cite{vonferber} show that betweenness distributions in large PTNs typically 
+display strong heterogeneity, with a few highly central nodes forming the backbone 
+for most passenger flows. This behaviour is linked to the presence of dense urban 
+cores and sparser peripheral areas, and reflects a fundamental organizational 
+principle observed across many transit systems. The results for Barcelona and Milan 
+follow this general structure, with Milan showing a more sharply centralized core.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{betweenness_bcn_top5.png}
+        \caption{Barcelona}
+        \label{fig:btw-bcn-top5}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{betweenness_mil_top5.png}
+        \caption{Milan}
+        \label{fig:btw-mil-top5}
+    \end{subfigure}
+    \caption{Top five stops by betweenness centrality in each city.}
+    \label{fig:btw-top5}
+\end{figure}
+
+Figure~\ref{fig:btw-top5} highlights the top five transfer nodes in each network.
+Barcelona’s most central stops are distributed along the main Diagonal–Gran Via
+corridor, reflecting a multi-hub backbone with several parallel routes supporting 
+network flow. Milan’s top-five stops, by contrast, are tightly concentrated around 
+major metro interchanges such as \textit{Cadorna M1/M2} and \textit{Stazione 
+Centrale}, demonstrating a more hierarchical structure.
+
+Overall, Barcelona exhibits a more distributed pattern of betweenness, while Milan
+relies heavily on a small number of highly central hubs. This makes Milan efficient
+for rapid transfers through its core but potentially more vulnerable to disruptions 
+at its key interchange stations. Barcelona’s broader distribution enhances resilience 
+but may diffuse passenger flows across multiple corridors.
+
+\subsubsection{Closeness Centrality}
+
+Closeness centrality quantifies how efficiently a stop can reach all other stops 
+in the network and therefore reflects its overall accessibility. Stops with high 
+closeness centrality tend to be located in areas with dense, well-connected 
+transport infrastructure, whereas peripheral or isolated stops typically exhibit 
+much lower values.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{closeness_bcn_map.png}
+        \caption{Barcelona}
+        \label{fig:close-bcn-map}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{closeness_mil_map.png}
+        \caption{Milan}
+        \label{fig:close-mil-map}
+    \end{subfigure}
+    \caption{Closeness centrality map of the two cities.}
+    \label{fig:close-map}
+\end{figure}
+
+Figure~\ref{fig:close-map} shows that closeness centrality in Barcelona is highest 
+along the central grid of the Eixample and Sant Mart\'i districts. The most 
+accessible stops---such as \textit{Val\`encia -- Pg Sant Joan}, \textit{Josep 
+Tarradellas -- Viladomat}, and \textit{Pg de Sant Joan -- Pl Moss\`en Jacint 
+Verdaguer}---form a continuous high-accessibility corridor through the city. 
+Barcelona displays a broad range of closeness values (mean $5.02$, median $5.70$), 
+with steep declines toward sparsely served or topographically constrained 
+neighbourhoods, such as Vallvidrera and Tibidabo.
+
+Milan exhibits a more centralized pattern. The highest closeness values (mean 
+$7.01$, median $7.62$) cluster tightly around the inner metropolitan ring. Stops 
+such as \textit{Via Bernina}, \textit{Viale Jenner}, \textit{Loreto M1/M2}, and 
+\textit{Lancetti} dominate the ranking, reflecting the city’s radial--concentric 
+transport design. Accessibility decreases sharply toward outer municipalities 
+including Bareggio, Cornaredo, and Cormano, whose stops show very low closeness 
+values due to long distances and fewer direct routes to the urban core.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{closeness_bcn_dist.png}
+        \caption{Barcelona}
+        \label{fig:close-bcn-dist}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{closeness_mil_dist.png}
+        \caption{Milan}
+        \label{fig:close-mil-dist}
+    \end{subfigure}
+    \caption{Closeness centrality distribution of the two cities.}
+    \label{fig:close-dist}
+\end{figure}
+
+The distributions shown in Figure~\ref{fig:close-dist} reveal these structural 
+differences more clearly. Barcelona’s distribution is broad, with many stops 
+occupying intermediate levels of accessibility, consistent with the city’s 
+multi-corridor grid layout. Milan’s distribution, by contrast, features a stronger 
+concentration of high values, indicating a more hierarchical design where central 
+interchanges offer significantly shorter path lengths to the rest of the network.
+
+These findings are consistent with empirical studies of large public transport 
+networks. Von Ferber et al.\ \cite{vonferber} highlight that closeness centrality in PTNs 
+typically reflects the contrast between dense, highly accessible city cores and 
+sparsely connected peripheral regions, often producing wide yet structured 
+distributions of accessibility. The patterns observed in Barcelona and Milan align 
+with this behaviour, with Milan exhibiting stronger centralization and Barcelona a 
+more distributed accessibility structure.
+
+Overall, Milan’s network provides very efficient access to its central areas but 
+relies more heavily on a compact set of core stops, which may increase sensitivity 
+to disruptions. Barcelona offers a more evenly distributed accessibility pattern 
+within its central grid but experiences more pronounced declines toward its 
+geographically constrained outskirts.
+
+
+
 \subsubsection{Eigenvector Centrality: Core vs. Corridor Influence}
 The Eigenvector Centrality analysis revealed a fundamental difference in how influence is distributed across the two cities:
 
@@ -213,6 +527,11 @@ pandas: \url{https://pandas.com}
 
 \bibitem{c}
 pandas: \url{https://pandas.com}
+
+\bibitem{vonferber}
+C.~von Ferber, T.~Holovatch, Y.~Holovatch, and V.~Palchykov.
+\textit{Public transport networks: empirical analysis and modeling}.
+arXiv:0803.3514, 2008. Available at: \url{https://arxiv.org/abs/0803.3514}
 
 \end{thebibliography}
 \end{document}
