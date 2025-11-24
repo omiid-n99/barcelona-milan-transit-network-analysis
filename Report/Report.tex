@@ -2,6 +2,9 @@
 \usepackage{graphicx} % Required for inserting images
 \usepackage{float}
 \usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{url}
+
 
 \title{Understanding Urban Transit Through Network Science: An Analysis of Milan and Barcelona}
 
@@ -50,26 +53,43 @@ The datasets sourced from Transitland are openly available and do not require an
 
 
 
-\section{Methodology}
+\section{Advanced Topological Metrics}
 
-\subsection{Advanced Topological Metrics}
-To move beyond basic connectivity measures (such as Degree Centrality), this study employs advanced spectral and path-based metrics to understand the deeper structure and resilience of the network:
+In this study, the analysis framework is organized into four distinct groups of 
+network measures, each capturing a different structural or functional 
+characteristic of the transport system:
 
-\begin{itemize}
-    \item \textbf{Eigenvector Centrality:} Unlike Degree Centrality, which simply counts direct connections, Eigenvector Centrality measures \textit{influence}. A node receives a high score if it is connected to other high-scoring nodes. This metric helps identify ``super-hubs'' that are not merely busy, but are connected to other strategic parts of the network structure.
-    
-    \item \textbf{Assortativity Coefficient:} This metric measures the correlation between the degrees of connected nodes. A positive coefficient ($r > 0$) indicates a ``Rich-Club'' effect where high-degree hubs tend to connect to other hubs (Assortative). A negative coefficient ($r < 0$) indicates a hierarchical structure where hubs connect primarily to small peripheral nodes (Disassortative).
-    
-    \item \textbf{Edge Betweenness Centrality:} While most metrics focus on stations (nodes), Edge Betweenness focuses on the physical tracks (edges). It calculates the fraction of all shortest paths in the network that pass through a specific edge. Edges with high scores represent ``bridges'' or ``bottlenecks''—critical infrastructure pieces whose failure would disproportionately disrupt global network efficiency.
-    
-    \item \textbf{Community Detection (Modularity):} To understand the functional zoning of the city, we applied Modularity Optimization (using the Clauset-Newman-Moore algorithm). This method partitions the network into communities where the density of internal edges is significantly higher than expected by chance, effectively revealing the ``natural neighborhoods'' of the transport system without relying on geographic coordinates.
-\end{itemize}
+\begin{enumerate}
+    \item \textbf{Centrality Measures (4 metrics):}  
+    These quantify the importance and influence of nodes within the network,  
+    including Degree Centrality, Betweenness Centrality, Closeness Centrality,  
+    and Eigenvector Centrality. Together, they describe how a station 
+    contributes to flow, accessibility, and global influence.
+
+    \item \textbf{Structural Measures (3 metrics):}  
+    These capture the deeper architectural properties of the network:  
+    Edge Betweenness Centrality identifies bottleneck edges,  
+    K-core Decomposition reveals hierarchical layers of connectivity,  
+    and Modularity (Community Detection) uncovers the natural substructures 
+    of the network.
+
+    \item \textbf{Efficiency Measures (3 metrics):}  
+    Average Path Length and Global Efficiency characterize the speed and 
+    optimality of travel within the network, while Assortativity measures 
+    degree–degree correlations that indicate whether hubs tend to connect 
+    to other hubs.
+
+    \item \textbf{Robustness Measures (2 metrics):}  
+    These assess resilience under failures or attacks, including robustness 
+    under random node removal and under targeted (degree-based) node removal.  
+\end{enumerate}
+
 
 
 
 \section{Results and Discussion}
 
-\subsection{Network Influence and Connectivity Patterns}
+\subsection{Centrality Measures}
 
 \subsubsection{Degree Centrality}
 
@@ -412,13 +432,9 @@ The Eigenvector Centrality analysis revealed a fundamental difference in how inf
     \caption{Comparison of Eigenvector Centrality in Barcelona and Milan.}
     \label{fig:comparison_map}
 \end{figure}
-\subsubsection{Assortativity and Network Resilience}
-A key finding of this study is the mixing pattern of the networks. Both cities exhibited \textbf{positive assortativity coefficients}:
-\[ r_{\text{Barcelona}} \approx 0.129, \quad r_{\text{Milan}} \approx 0.188 \]
-
-This result is non-trivial, as many transport networks (such as airline routes) are typically disassortative. The positive values indicate a \textbf{``Rich-Club'' topology}: major hubs in both Barcelona and Milan tend to connect directly to other major hubs. This structure enhances resilience, as the core ``backbone'' of the city remains connected even if peripheral suburban branches are disrupted.
 
 
+\subsection{Structural Measures}
 
 \subsubsection{Critical Infrastructure (Edge Betweenness)}
 The Edge Betweenness analysis highlighted the physical vulnerabilities of the networks:
@@ -426,6 +442,8 @@ The Edge Betweenness analysis highlighted the physical vulnerabilities of the ne
 \begin{itemize}
     \item \textbf{Critical Bridges:} In both cities, the algorithm identified specific ``arteries'' (visualized in red/yellow in Figure \ref{fig:betweenness}) that carry a disproportionate amount of passenger flow. These edges represent the unique shortest paths for substantial portions of the population.
     \item \textbf{Redundancy:} Barcelona’s grid-like mesh resulted in a more distributed set of critical edges. In contrast, Milan showed higher pressure on the radial lines entering the city center, suggesting that a failure in one of Milan's central ``spokes'' would have a more catastrophic impact on global efficiency than a similar failure in Barcelona's mesh.
+\end{itemize}
+
 \begin{figure}[H]
     \centering
     
@@ -446,35 +464,178 @@ The Edge Betweenness analysis highlighted the physical vulnerabilities of the ne
 \end{figure}
 
 
+\subsubsection{K-Core Decomposition}
 
+To understand the hierarchical layers of the network, we utilized \textbf{K-core Decomposition}. This method recursively removes nodes with a degree less than $k$ until only nodes with degree $\geq k$ remain. The result effectively "peels" the network like an onion to reveal its most densely connected internal structure (the core) versus its outer layers (the periphery).
 
-\subsubsection{Community Structure and Zoning}
-Using Modularity-based clustering, we successfully partitioned the cities into functional transport zones:
+We first analyzed the statistical distribution of core numbers ($k$) across all stations (Figure \ref{fig:coreness_dist}).
 
-\begin{itemize}
-    \item \textbf{Milan (Radial Wedges):} The algorithm detected \textbf{47 communities} ($Q = 0.927$). Visually, these form ``wedges'' radiating from the center, confirming the radial nature of the network. Commuters are grouped by the specific ``arm'' of the network they utilize.
-    \item \textbf{Barcelona (Interlocked Mesh):} The algorithm detected \textbf{36 communities} ($Q = 0.890$). These communities appear as interlocked, linear clusters that align with major Metro lines and transfer corridors. This reflects a polycentric city design where movement is facilitated across the grid rather than solely towards a single center.
-\end{itemize}
-\begin{figure}[H]
+\begin{figure}[h!]
     \centering
-    
-    \begin{subfigure}{0.45\textwidth}
+    \begin{subfigure}[b]{0.48\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{community.png}  
-        \caption{Barcelona}
+        \includegraphics[width=\textwidth]{bar_coreness.png}
+        \caption{Barcelona Coreness Distribution}
+        \label{fig:bar_coreness}
     \end{subfigure}
-    \hfill 
-    \begin{subfigure}{0.45\textwidth}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{community2.png} 
-        \caption{Milan}
+        \includegraphics[width=\textwidth]{mil_coreness.png}
+        \caption{Milan Coreness Distribution}
+        \label{fig:mil_coreness}
     \end{subfigure}
-    
-    \caption{Community Structure and Zoning detected for both cities}
-    \label{fig:comparison_map}
+    \caption{Histograms showing the number of stops belonging to each k-shell.}
+    \label{fig:coreness_dist}
 \end{figure}
 
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{City} & \textbf{Max Core ($k_{max}$)} & \textbf{Network Topology Description} \\ \hline
+Barcelona     & 2                             & Linear / Ring-like structure          \\ \hline
+Milan         & 3                             & Mesh / Interconnected structure       \\ \hline
+\end{tabular}
+\caption{Maximum K-core values for Barcelona and Milan.}
+\label{tab:kcore_results}
+\end{table}
 
+As seen in Table \ref{tab:kcore_results}, the $k_{max}$ values are relatively low (2 and 3). This is expected for public transport networks, which are designed as lines rather than dense social meshes.
+\begin{itemize}
+    \item \textbf{Barcelona ($k_{max}=2$):} The distribution is dominated by stations with $k=2$. This indicates a network composed primarily of simple lines and cycles (loops). There is no subset of stations dense enough to support a 3-core.
+    \item \textbf{Milan ($k_{max}=3$):} Milan shows a deeper hierarchy. While most stations are in the 2-core, a distinct subset forms a 3-core. This suggests a denser mesh where stations are more interconnected, likely forming triangles or complex junctions.
+\end{itemize}
+
+
+To visualize where these "core" nodes are located physically, we mapped the stations, distinguishing between the Periphery and the Maximum Core (Figure \ref{fig:core_maps}).
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{bar_core_v_periphery.png}
+        \caption{Barcelona: Core ($k=2$) vs Periphery}
+        \label{fig:bar_map}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{mil_core_v_periphery.png}
+        \caption{Milan: Core ($k=3$) vs Periphery}
+        \label{fig:mil_map}
+    \end{subfigure}
+    \caption{Geographical visualization of the network core. Red points indicate the deepest core ($k_{max}$), while blue points indicate peripheral layers.}
+    \label{fig:core_maps}
+\end{figure}
+
+\begin{itemize}
+    \item In \textbf{Barcelona}, the "Core" ($k=2$) essentially covers the entire active network, excluding only the dead-end branches (periphery). This confirms the decentralized, line-based nature of the system.
+    \item In \textbf{Milan}, the "Core" ($k=3$) is likely concentrated in the city center or major exchange hubs. This highlights the areas of highest structural resilience; if peripheral nodes fail, this central red mesh is more likely to remain functional due to its higher interconnectivity.
+\end{itemize}
+
+\subsubsection{Modularity (Community Detection)}
+
+To understand the natural substructures of the transit networks, we applied the \textbf{Greedy Modularity} algorithm. This metric quantifies how well a network divides into distinct communities (clusters). A high modularity score ($Q$) implies that stations within a group are densely connected to each other but sparsely connected to stations outside the group. In the context of urban transit, these communities often correspond to specific transit lines, geographic zones, or neighborhoods.
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{bar_mod.png}
+        \caption{Barcelona Community Structure}
+        \label{fig:bar_mod}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{mil_mod.png}
+        \caption{Milan Community Structure}
+        \label{fig:mil_mod}
+    \end{subfigure}
+    \caption{Visualization of network communities detected by the Greedy Modularity algorithm. Colors indicate distinct communities.}
+    \label{fig:modularity_plots}
+\end{figure}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{City} & \textbf{Number of Communities} & \textbf{Modularity ($Q$)} \\ \hline
+Barcelona     & 40                             & 0.8901                    \\ \hline
+Milan         & 50                             & 0.9273                    \\ \hline
+\end{tabular}
+\caption{Results of Greedy Modularity optimization for Barcelona and Milan.}
+\label{tab:modularity}
+\end{table}
+
+\paragraph{Interpretation:}
+The results (Table \ref{tab:modularity} and Figure \ref{fig:modularity_plots}) indicate that both cities possess an exceptionally high modularity structure, with $Q$ values approaching the theoretical maximum of 1. 
+
+\begin{itemize}
+    \item \textbf{Milan ($Q \approx 0.93$):} The higher modularity and larger number of communities (50) suggest a network that is highly compartmentalized. This indicates a system where transit lines or local zones operate somewhat independently, with fewer "bridge" connections linking different clusters compared to Barcelona.
+    \item \textbf{Barcelona ($Q \approx 0.89$):} While still highly modular, Barcelona has fewer communities (40) and a slightly lower $Q$ score. This suggests a slightly more integrated network where the boundaries between different transit zones or lines are somewhat more fluid than in Milan.
+\end{itemize}
+
+Overall, the high modularity in both systems reflects the nature of public transport, where stations are often organized linearly along routes, creating strong internal links and fewer cross-route connections.
+
+
+\subsection{Eﬀiciency Measures}
+
+\subsubsection{Assortativity and Network Resilience}
+A key finding of this study is the mixing pattern of the networks. Both cities exhibited \textbf{positive assortativity coefficients}
+\[
+r_{\text{Barcelona}} \approx 0.129,\qquad
+r_{\text{Milan}} \approx 0.118
+\]
+
+This result is non-trivial, as many transport networks (such as airline routes) are typically disassortative. The positive values indicate a \textbf{``Rich-Club'' topology}: major hubs in both Barcelona and Milan tend to connect directly to other major hubs. This structure enhances resilience, as the core ``backbone'' of the city remains connected even if peripheral suburban branches are disrupted.
+
+\subsection{Robustness Measures}
+
+To evaluate the resilience of the transport networks, we simulated two types of stress scenarios: \textbf{Random Failures} (simulating accidental technical issues) and \textbf{Targeted Attacks} (simulating the removal of critical hubs or bridges). We measured robustness using the area under the curve (AUC) of the size of the Largest Connected Component (LCC). A higher AUC indicates a network that remains functional longer as nodes are removed.
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{bar_rob.png}
+        \caption{Barcelona Robustness Curves}
+        \label{fig:bar_rob}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{mil_rob.png}
+        \caption{Milan Robustness Curves}
+        \label{fig:mil_rob}
+    \end{subfigure}
+    \caption{Network disintegration under node removal. The y-axis represents the fraction of the network still connected ($S(f)$), while the x-axis represents the fraction of nodes removed ($f$).}
+    \label{fig:robustness_plots}
+\end{figure}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Attack Strategy} & \textbf{Barcelona AUC} & \textbf{Milan AUC} \\ \hline
+Random Removal (Blue)           & 0.205                  & 0.184              \\ \hline
+Targeted Degree (Green)         & 0.079                  & 0.067              \\ \hline
+Targeted Betweenness (Red)      & 0.202                  & 0.163              \\ \hline
+\end{tabular}
+\caption{Robustness scores (AUC). Higher values indicate greater resilience.}
+\label{tab:robustness_scores}
+\end{table}
+
+The analysis reveals a classic property of scale-free networks: they are robust to errors but fragile to attacks.
+
+\begin{itemize}
+    \item \textbf{Random vs. Targeted (General):} In both cities, the networks degrade slowly under random removal (blue lines), maintaining connectivity even after 20-30\% of stations fail. However, under a targeted Degree attack (green lines), the networks collapse almost instantly. Removing just the top 5-10\% of hubs destroys the system's global connectivity.
+    
+    \item \textbf{Barcelona's Structural Integration:} Barcelona is slightly more robust overall (AUC 0.205 vs 0.184). Notably, Barcelona is highly resistant to Betweenness attacks (Red line). The AUC for Betweenness (0.202) is nearly identical to Random removal (0.205). This suggests that Barcelona has fewer "critical bridges" or bottlenecks; if a bridge is removed, there are likely alternative paths connecting the communities.
+    
+    \item \textbf{Milan's Vulnerability:} Milan shows a sharper decline under Betweenness attacks (Red line drops to 0.163). This aligns with our earlier Modularity findings ($Q=0.93$); Milan is more compartmentalized. Because the communities are so distinct, cutting the specific stations that bridge these communities causes the network to fracture faster than in Barcelona.
+\end{itemize}
 
 \section{Validity Analysis}
 
@@ -519,7 +680,6 @@ Our results suggest that while Milan’s radial system provides direct access to
 
 
 \begin{thebibliography}{9}
-
 \bibitem{a}
 GTFS Documentation: \url{https://gtfs.org}
 \bibitem{b}
@@ -532,6 +692,6 @@ pandas: \url{https://pandas.com}
 C.~von Ferber, T.~Holovatch, Y.~Holovatch, and V.~Palchykov.
 \textit{Public transport networks: empirical analysis and modeling}.
 arXiv:0803.3514, 2008. Available at: \url{https://arxiv.org/abs/0803.3514}
-
 \end{thebibliography}
+
 \end{document}
